@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sampleapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sampleapp
+  template:
+    metadata:
+      labels:
+        app: sampleapp
+    spec:
+      containers:
+      - name: sampleapp
+        image: mayur0319/test:v1
+        imagePullPolicy: Always   # 🔥 IMPORTAN
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "64Mi"
+          limits:
+            cpu: "300m"
+            memory: "100Mi"
+
+      tolerations:
+      - key: "sabade"
+        operator: "Equal"
+        value: "mayur"
+        effect: "NoSchedule"
