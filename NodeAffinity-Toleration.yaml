@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sampleapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sampleapp
+  template:
+    metadata:
+      labels:
+        app: sampleapp
+    spec:
+      containers:
+      - name: sampleapp
+        image: mayur0319/test:v1
+        imagePullPolicy: Always   # 🔥 IMPORTAN
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "64Mi"
+          limits:
+            cpu: "300m"
+            memory: "100Mi"
+
+
+# Affinity and Tolerations
+# Node Affinity: It allows you to constrain which nodes your pod is eligible to be scheduled on, based on labels on the nodes. There are two types of node affinity: requiredDuringSchedulingIgnoredDuringExecution (hard requirement) and preferredDuringSchedulingIgnoredDuringExecution (soft preference).
+# benifits of using affinity are - It helps to improve the performance of your application by scheduling pods on nodes that are closer to the data they need to access. It also helps to improve the availability of your application by scheduling pods on nodes that are less likely to fail. Additionally, it can help to reduce costs by scheduling pods on nodes that are less expensive to run. Overall, using affinity can help to optimize the scheduling of your pods and improve the performance, availability, and cost-effectiveness of your application.
+      affinity:
+        nodeAffinity:
+# You can use preferredDuringSchedulingIgnoredDuringExecution for a soft preference, which means that the scheduler will try to schedule the pod on nodes that match the preference, but it will still schedule the pod on other nodes if no matching nodes are available. In the above example, we have specified a preference for nodes that have a label with key "type" and value "backend". The weight of 1 indicates that this preference is of equal importance to other preferences (if there are any).
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference: 
+                matchExpressions:
+                - key: type
+                  operator: In
+                  values:
+                  - backend
+# Alternatively, you can use requiredDuringSchedulingIgnoredDuringExecution for a hard requirement:    
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - backend
+
+# Tolerations: They allow the scheduler to schedule pods with certain tolerations on nodes with matching taints. Taints are applied to nodes and allow a node to repel a set of pods. Tolerations are applied to pods and allow (but do not require) the pods to schedule onto nodes with matching taints. In the above example, we have specified a toleration for a taint with key "sabade", operator "Equal", value "mayur", and effect "NoSchedule". This means that the pod can be scheduled on nodes that have a taint with the same key, operator, value, and effect.
+      tolerations:
+      - key: "sabade"
+        operator: "Equal"
+        value: "mayur"
+        effect: "NoSchedule"
