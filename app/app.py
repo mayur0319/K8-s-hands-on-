@@ -1,6 +1,7 @@
 from flask import Flask, request
 import time
 import threading
+import os
 
 app = Flask(__name__)
 
@@ -35,6 +36,22 @@ def memory_stress():
 @app.route("/health")
 def health():
     return "OK"
+
+# New endpoint for ConfigMap data
+@app.route("/config")
+def config():
+    config_value = os.getenv('APP_CONFIG', 'default_config')
+    return f"Config value: {config_value}\n"
+
+# New endpoint for Secret data
+@app.route("/secret")
+def secret():
+    try:
+        with open('/mnt/secrets/secret.txt', 'r') as f:
+            secret_value = f.read().strip()
+        return f"Secret value: {secret_value}\n"
+    except FileNotFoundError:
+        return "Secret file not found\n"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=3000)
