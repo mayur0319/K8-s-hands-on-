@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: sampleapp
-        image: mayur0319/test:v2
+        image: mayur0319/test:v1
         imagePullPolicy: Always   # 🔥 IMPORTAN
         ports:
         - containerPort: 3000
@@ -25,3 +25,17 @@ spec:
           limits:
             cpu: "300m"
             memory: "100Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sampleapp-service
+spec:
+  type: LoadBalancer  # Changed from NodePort
+  selector:
+    app: sampleapp
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
