@@ -37,7 +37,7 @@ spec:
       containers:
       - name: mysql
         image: mysql:8.0
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: MYSQL_ROOT_PASSWORD
           value: rootpass
@@ -98,7 +98,7 @@ spec:
       containers:
       - name: backend
         image: coder-backend:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: DB_HOST
           value: db-service
@@ -110,6 +110,29 @@ spec:
           value: coderdb
         ports:
         - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          failureThreshold: 12
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 5
         resources:
           requests:
             cpu: "100m"
@@ -150,9 +173,32 @@ spec:
       containers:
       - name: frontend
         image: coder-frontend:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 80
+          failureThreshold: 18
+          periodSeconds: 5
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
         resources:
           requests:
             cpu: "100m"

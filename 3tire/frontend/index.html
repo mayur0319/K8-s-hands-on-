@@ -18,17 +18,32 @@
   <pre id="result">Press the button to load data.</pre>
 
   <script>
-    document.getElementById('fetch').addEventListener('click', async () => {
+    async function fetchMessage(retries = 3, delay = 500) {
       const result = document.getElementById('result');
       result.textContent = 'Loading...';
-      try {
-        const resp = await fetch('/api/message');
-        const data = await resp.json();
-        result.textContent = JSON.stringify(data, null, 2);
-      } catch (err) {
-        result.textContent = 'Request failed: ' + err;
+
+      for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+          const resp = await fetch('/api/message');
+          if (!resp.ok) {
+            const message = await resp.text();
+            throw new Error(`HTTP ${resp.status}: ${message}`);
+          }
+          const data = await resp.json();
+          result.textContent = JSON.stringify(data, null, 2);
+          return;
+        } catch (err) {
+          if (attempt === retries) {
+            result.textContent = 'Request failed: ' + err;
+            return;
+          }
+          result.textContent = `Retry ${attempt}/${retries}...`; 
+          await new Promise(resolve => setTimeout(resolve, delay * attempt));
+        }
       }
-    });
+    }
+
+    document.getElementById('fetch').addEventListener('click', () => fetchMessage());
   </script>
 </body>
 </html>
