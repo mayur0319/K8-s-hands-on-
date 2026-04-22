@@ -10,6 +10,7 @@ fi
 
 files=(
   "namespace.yaml"
+  "pv-pvc-mysql.yaml"
   "configmap-mysql-init.yaml"
   "deployment-db.yaml"
   "service-db.yaml"

@@ -1,7 +1,8 @@
 import os
-import mysql.connector
-from flask import Flask, jsonify
 import time
+
+import mysql.connector
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
@@ -48,12 +49,25 @@ def get_connection():
     )
 
 
+def fetch_messages(limit=20):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(
+        "SELECT id, text FROM messages ORDER BY id DESC LIMIT %s",
+        (limit,),
+    )
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return rows
+
+
 @app.route("/api/message")
 def message():
     try:
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT text FROM messages ORDER BY id LIMIT 1")
+        cursor.execute("SELECT text FROM messages ORDER BY id DESC LIMIT 1")
         row = cursor.fetchone()
         cursor.close()
         conn.close()
@@ -61,6 +75,38 @@ def message():
         if row:
             return jsonify({"message": row[0]})
         return jsonify({"message": "No message found in database"}), 404
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/messages", methods=["GET"])
+def list_messages():
+    try:
+        return jsonify({"messages": fetch_messages()})
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/messages", methods=["POST"])
+def create_message():
+    payload = request.get_json(silent=True) or {}
+    text = (payload.get("text") or "").strip()
+
+    if not text:
+        return jsonify({"error": "text is required"}), 400
+
+    if len(text) > 255:
+        return jsonify({"error": "text must be 255 characters or fewer"}), 400
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO messages (text) VALUES (%s)", (text,))
+        conn.commit()
+        message_id = cursor.lastrowid
+        cursor.close()
+        conn.close()
+        return jsonify({"id": message_id, "text": text}), 201
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
