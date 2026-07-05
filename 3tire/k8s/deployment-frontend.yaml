@@ -3,21 +3,21 @@ kind: Deployment
 metadata:
   name: frontend
   namespace: three-tier
-spec:
-  replicas: 1
-  selector:
+spec: #Specification of the desired behavior of the Deployment.
+  replicas: 1 #Number of desired pods. This is a pointer to distinguish between explicit zero and not specified. Defaults to 1.
+  selector:  #Label selector for pods. Existing ReplicaSets whose pods are selected by this will be the ones affected by this deployment. It must match the pod template's labels. A label selector is a label query over a set of resources. The result of matchLabels and matchExpressions are ANDed. An empty label selector matches all objects. A null label selector matches no objects.
     matchLabels:
       app: frontend
-  template:  #Template describes the pods that will be created. The only allowed template.spec.restartPolicy value is "Always".
+  template:  #Template describes the pods that will be created. The only allowed template.spec.restartPolicy value is "Always". PodTemplateSpec describes the data a pod should have when created from a template
     metadata:
       labels:
         app: frontend
-    spec:
+    spec: #Specification of the desired behavior of the pod. 
       # securityContext:
       #   runAsNonRoot: true
       #   runAsUser: 1000
       #   runAsGroup: 1000
-      containers:
+      containers: #List of containers belonging to the pod. Containers cannot currently be added or removed. There must be at least one container in a Pod. Cannot be updated.
       - name: frontend
         image: coder-frontend:latest
         imagePullPolicy: Always
