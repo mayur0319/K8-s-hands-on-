@@ -13,6 +13,9 @@ spec:
       labels:
         app: frontend
     spec:
+      # securityContext:
+      #   runAsUser: 1000
+      #   runAsGroup: 1000
       containers:
       - name: frontend
         image: coder-frontend:latest
