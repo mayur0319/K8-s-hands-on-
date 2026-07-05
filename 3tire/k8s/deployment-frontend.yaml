@@ -13,26 +13,26 @@ spec: #Specification of the desired behavior of the Deployment.
       labels:
         app: frontend
     spec: #Specification of the desired behavior of the pod. 
-      # securityContext:
+      # securityContext: #SecurityContext holds pod-level security attributes and common container settings. Optional: Defaults to empty. See type description for default values of each field.
       #   runAsNonRoot: true
       #   runAsUser: 1000
       #   runAsGroup: 1000
       containers: #List of containers belonging to the pod. Containers cannot currently be added or removed. There must be at least one container in a Pod. Cannot be updated.
       - name: frontend
         image: coder-frontend:latest
-        imagePullPolicy: Always
-        # securityContext:
+        imagePullPolicy: Always #Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise
+        # securityContext: #SecurityContext holds container-level security attributes and common container settings. Optional: Defaults to empty. See type description for default values of each field.
         #   privileged: true
-        ports:
+        ports: # List of ports to expose from the container.
         - containerPort: 80
-        startupProbe:
+        startupProbe: #StartupProbe describes a prober to check if the application within the container is started. If specified, no other probes are executed until this completes successfully. This can be used to provide different probe parameters at the beginning of a container's lifecycle, when it might take a long time to start, than during steady-state operation.
           httpGet:
             path: /health
             port: 80
           failureThreshold: 18
           periodSeconds: 5
           timeoutSeconds: 3
-        readinessProbe:
+        readinessProbe: #ReadinessProbe describes a probe to check if the application within the container is ready to service requests. This can be used to provide different probe parameters at the beginning of a container's lifecycle, when it might take a long time to start, than during steady-state operation.
           httpGet:
             path: /health
             port: 80
@@ -40,7 +40,7 @@ spec: #Specification of the desired behavior of the Deployment.
           periodSeconds: 10
           timeoutSeconds: 10
           failureThreshold: 5
-        livenessProbe:
+        livenessProbe: #LivenessProbe describes a probe to check if the application within the container is still alive. The default state of a container is assumed to be alive. When a liveness probe fails, the kubelet kills the container, and the container is subjected to its restart policy. If a container does not provide a liveness probe, the default state is Success. However, if the container does not provide a readiness probe, it will be considered ready.
           httpGet:
             path: /health
             port: 80
@@ -48,12 +48,14 @@ spec: #Specification of the desired behavior of the Deployment.
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
-        resources:
-          requests:
+        resources: #Compute resources required by the container.
+          requests: #Requests are the minimum resources that the container needs.
             cpu: "100m"
             memory: "128Mi"
-          limits:
+          limits: #Limits are the maximum resources that the container can use.
             cpu: "250m"
             memory: "256Mi"
-      # nodeSelector:
+      # nodeSelector: #NodeSelector is a selector which must be true for the pod to fit on a node. Selector which must match a node's labels for the pod to be scheduled on that node. More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
       #   type: frontend
+
+      
