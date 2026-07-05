@@ -13,6 +13,8 @@ spec: #Specification of the desired behavior of the Deployment.
       labels:
         app: frontend
     spec: #Specification of the desired behavior of the pod. 
+      # readinessGates: # List of references to conditions that the pod should be aware of. Pod readiness will only be true when all conditions specified in the readiness gates have been set to true. The pod will not be marked as ready if one or more of these conditions are false or unknown. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-readiness-gate
+      # - conditionType: "example.com/loadbalancer-ready"
       # securityContext: #SecurityContext holds pod-level security attributes and common container settings. Optional: Defaults to empty. See type description for default values of each field.
       #   runAsNonRoot: true
       #   runAsUser: 1000

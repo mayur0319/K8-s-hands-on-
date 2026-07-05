@@ -19,6 +19,7 @@ files=(
   "deployment-frontend.yaml"
   "service-frontend.yaml"
   "networkpolicy-3tier.yaml"
+  "priorityclass.yaml"
 )
 
 for file in "${files[@]}"; do

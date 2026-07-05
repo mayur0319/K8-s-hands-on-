@@ -3,5 +3,6 @@ kind: PriorityClass
 metadata:
   name: high-priority
 value: 10000
+# preemptionPolicy: Never
 globalDefault: false
 description: "High priority applications"
