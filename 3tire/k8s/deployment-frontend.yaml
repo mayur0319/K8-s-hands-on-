@@ -1,5 +1,5 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1 #APIVersion defines the versioned schema of this representation of an object.
+kind: Deployment 
 metadata:
   name: frontend
   namespace: three-tier
@@ -8,18 +8,21 @@ spec:
   selector:
     matchLabels:
       app: frontend
-  template:
+  template:  #Template describes the pods that will be created. The only allowed template.spec.restartPolicy value is "Always".
     metadata:
       labels:
         app: frontend
     spec:
       # securityContext:
+      #   runAsNonRoot: true
       #   runAsUser: 1000
       #   runAsGroup: 1000
       containers:
       - name: frontend
         image: coder-frontend:latest
         imagePullPolicy: Always
+        # securityContext:
+        #   privileged: true
         ports:
         - containerPort: 80
         startupProbe:
